@@ -1,20 +1,13 @@
 import streamlit as st
-import matplotlib.pyplot as plt  # Importación de la biblioteca matplotlib.pyplot para graficar datos
-import pandas as pd  # Importación de la biblioteca pandas para manipulación de datos en forma de DataFrame
-import numpy as np  # Importación de la biblioteca numpy para operaciones numéricas
-
-from datetime import datetime
-import seaborn as sns
-
-from scipy.stats import norm
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from scipy import stats
-
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+import pandas as pd
 
-pd.Timestamp.today().strftime('%Y-%m-%d %H:%M:%S') # Se capta la fecha y hora actual
+#pd.Timestamp.today().strftime('%Y-%m-%d %H:%M:%S') # Se capta la fecha y hora actual
 
 #Importamos la librería nueva
 import yfinance as yf
@@ -55,135 +48,64 @@ plt.title('Precios reales y media móvil')
 plt.legend()
 st.pyplot(plt)
 
-# Creando funciones de transformacion
-def transformarSetASep(fecha):
-  return fecha.replace('Set', 'Sep')
 
-def transformarFechaDiaria(fecha):
-  fechaNueva = datetime.strptime(fecha, '%d.%b.%y')
-  return fechaNueva
-
-def transformarFechaMensual(fecha):
-  fechaNueva = datetime.strptime(fecha, '%b.%Y')
-  return fechaNueva
-
-def transformarFechaConHora(fecha):
-  fechaNueva = pd.to_datetime(fecha,
-               format='%Y-%m-%d')
-  return fechaNueva
-
-# Transformacion de los datos
+# Definir la tendencia positiva
 df.reset_index(inplace=True)
-df['Date'] = df['Date'].apply(transformarFechaConHora)
-df = df.set_index('Date')
+df = df.dropna()
+df['Trend'] = np.where(df['Close'].shift(-1) > df['Close'],1,0)
+#filas_con_null = df[df == 'null'].dropna(how='all')
 
-# Preprocesamiento de los datos
-df['Return'] = df['Close'].pct_change()
-df['Return'] = df['Return'].fillna(0)
+#print(filas_con_null)
+df = df.dropna(how='any')
 
-df['Trend'] = np.where(df['Return'] > 0.00, 1, 0)
+# Dividir los datos en características (X) y etiquetas (y)
 
-df = df.dropna(how='any')  # Eliminar filas con valores nulos
+X = df.drop(columns=['Date','Trend'])  # Eliminar las columnas 'Date' y 'Trend' de las características
+y = df['Trend']
 
+# Dividir los datos en conjuntos de entrenamiento y prueba
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Dividir los datos en conjunto de entrenamiento y prueba
-train_size = int(len(df) * 0.8)
-train_data = df[:train_size]
-test_data = df[train_size:]
+# Crear una instancia del modelo SVC
 
-# Escalar los datos
-from sklearn.preprocessing import MinMaxScaler
-scaler = MinMaxScaler(feature_range=(0, 1))
-scaled_train_data = scaler.fit_transform(train_data.drop(['Return'], axis=1))
-scaled_test_data = scaler.transform(test_data.drop(['Return'], axis=1))
+modelo = SVC()
+modelo.fit(X_train, y_train)
 
-# Crear secuencias de tiempo para el modelo LSTM
-window_size = 20
-
-def create_sequences(data):
-    x = []
-    y = []
-    for i in range( window_size , len(data) ):
-
-        x.append( data[i-window_size:i] )
-        print("interacion: ", i-window_size +1 )
-        print("indicador: ", i)
-        print("posicion inicial tomada: ", i-window_size)
-        print("posicion final tomada: ", i-1)
-
-        print(data[i])
-        # print(data[i-window_size:i])
-
-        y.append( data[i][-1] )
-        print("y[",i,"]: ", data[i][-1])
-
-
-    return np.array(x), np.array(y)
-
-session = SessionState.get(code='some c++ code')
-a = st.radio("Edit or show", ['Edit', 'Show'], 1)
-if a == 'Edit':
-    session.code = st.text_input('Edit code', session.code)
-else:
-    st.write(session.code)
-
-with st.spinner('Espere mientras se crean las secuencias para el modelo LSTM...'):
-    x_train, y_train = create_sequences(scaled_train_data)
-    x_test, y_test = create_sequences(scaled_test_data)
-
-
-# Construccion del modelo LSTM
-from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout
-from keras.optimizers import adam
-
-model = Sequential()
-model.add(LSTM(units=160, return_sequences=True,
-               input_shape=(x_train.shape[1], x_train.shape[2])))
-# model.add(Dropout(0.2))
-model.add(LSTM(units=160))
-# model.add(Dropout(0.2))
-model.add(Dense(units=1, activation='sigmoid'))
-model.summary()
-
-# Compilar el modelo
-model.compile(
-    optimizer = adam.Adam(learning_rate=0.001),
-    loss='binary_crossentropy',
-    metrics=['accuracy'])
-
-st.markdown("---")
-with st.spinner('Espere mientras se realiza la predicción...'):
-    model.fit(
-        x_train,
-        y_train,
-        epochs=20,
-        batch_size=64,
-        validation_data=(x_test, y_test),
-        verbose=1)
-st.success('Predicción realizada con éxito!')
-
-# Predecir la tendencia para el periodo de TEST, incluido el día siguiente
-test_predict = model.predict(x_test)
-
+# Predecir la tendencia en el conjunto de prueba
+df['Predicted_Signal'] = modelo.predict(X)
 
 st.write("#### Dataframe con las predicciones")
 # Crear DataFrame con las predicciones
-predictions_df = pd.DataFrame({'Valor Real': y_test, 'Predicciones': np.array(test_predict).flatten()})
+predictions_df = pd.DataFrame({'Tendencia Real': df['Trend'] , 'Tendencia predecida': df['Predicted_Signal'] })
 
 # Mostrar el DataFrame con las predicciones
 st.write(predictions_df)
 
-# Graficar precios reales y predicciones
-st.write("#### Grafico Precio Real vs Predicciones")
-plt.figure(figsize=(10, 6))
-plt.plot(y_test, color = 'red', label = 'Real Stock Price')
-plt.plot(test_predict, color = 'blue', label = 'Predicted Stock Price')
-plt.xlabel('Time')
-plt.ylabel('Tesla Stock Price')
-plt.title('Precios reales y predicciones')
-plt.legend()
-st.pyplot(plt)
+fig = plt.figure()
+plt.plot(df['Trend'][:50],color='red')
+plt.plot(df['Predicted_Signal'][:50],color='blue')
+st.pyplot(fig)
+
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+
+accuracy = accuracy_score(df["Trend"], df["Predicted_Signal"])
+st.write("#### Accuracy del modelo: ", accuracy)
+
+conf_matrix = confusion_matrix(df["Trend"], df["Predicted_Signal"])
+st.write("#### Matriz de confusión del modelo: ", conf_matrix)
+
+# Calcular sensibilidad (recall)
+recall = conf_matrix[1, 1] / (conf_matrix[1, 0] + conf_matrix[1, 1])
+st.write("Sensibilidad del modelo:", recall)
+
+# Calcular especificidad
+specificity = conf_matrix[0, 0] / (conf_matrix[0, 0] + conf_matrix[0, 1])
+st.write("Especificidad del modelo:", specificity)
+
+# Calcular puntaje F1
+f1_score = 2 * (recall * specificity) / (recall + specificity)
+st.write("Puntaje F1 del modelo:", f1_score)
 
 with st.sidebar:
     st.write("🔼 Seleccione el modelo que desea ejecutar de la lista superior")

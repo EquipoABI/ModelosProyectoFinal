@@ -2,6 +2,8 @@ import streamlit as st
 
 st.set_page_config(page_title="Modelos de predicción del Grupo A", page_icon=":smiley:")
 st.title("📌Despliegue de modelos de Grupo A Inteligencia de Negocios📈💻")
+with st.sidebar:
+    st.write("🔼 Seleccione el modelo que desea ejecutar de la lista superior")
 st.markdown(
     """
     ## Integrantes del Equipo A:
@@ -37,5 +39,3 @@ st.markdown(
     - El rango de fechas.
 """
 )
-with st.sidebar:
-    st.write("🔼 Seleccione el modelo que desea ejecutar de la lista superior")
