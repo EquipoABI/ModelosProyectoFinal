@@ -80,7 +80,11 @@ df = df.set_index('Date')
 # Preprocesamiento de los datos
 df['Return'] = df['Close'].pct_change()
 df['Return'] = df['Return'].fillna(0)
+
+df['Trend'] = np.where(df['Return'] > 0.00, 1, 0)
+
 df = df.dropna(how='any')  # Eliminar filas con valores nulos
+
 
 # Dividir los datos en conjunto de entrenamiento y prueba
 train_size = int(len(df) * 0.8)
@@ -94,7 +98,7 @@ scaled_train_data = scaler.fit_transform(train_data.drop(['Return'], axis=1))
 scaled_test_data = scaler.transform(test_data.drop(['Return'], axis=1))
 
 # Crear secuencias de tiempo para el modelo LSTM
-window_size = 100
+window_size = 20
 
 def create_sequences(data):
     x = []
