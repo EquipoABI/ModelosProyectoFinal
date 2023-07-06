@@ -82,8 +82,8 @@ predictions_df = pd.DataFrame({'Tendencia Real': df['Trend'] , 'Tendencia predec
 st.write(predictions_df)
 
 fig = plt.figure()
-plt.plot(df['Trend'][:50],color='red')
-plt.plot(df['Predicted_Signal'][:50],color='blue')
+plt.plot(df['Trend'][:50],color='red',label= 'Original Trend')
+plt.plot(df['Predicted_Signal'][:50],color='blue',label= 'Predicted Trend')
 st.pyplot(fig)
 
 from sklearn.metrics import accuracy_score
