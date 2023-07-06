@@ -9,7 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from scipy import stats
 from sklearn.svm import SVR
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+import math
 
 pd.Timestamp.today().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -24,7 +25,7 @@ st.markdown("---")
 # Set start and end dates for the price data
 # Se establece la fecha de inicio y de fin para los datos de precios usando el input del usuario
 st.write("Ingrese el rango de fechas para el análisis")
-fechaInicio = st.date_input('Fecha de inicio', value=pd.to_datetime('2019-1-1'))
+fechaInicio = st.date_input('Fecha de inicio', value=pd.to_datetime('2020-1-1'))
 fechaFin = st.date_input('Fecha de fin', value=pd.to_datetime('today'))
 st.markdown("---")
 valor_txt = st.text_input("Ingrese el símbolo de valor a analizar", "BVN")
@@ -78,34 +79,24 @@ dfprices.reverse()
 dates = np.reshape(dfdates,(len(dfdates), 1)) # converting to matrix of n X 1
 
 
-svr_poly = SVR(kernel= 'poly', C= 1e3)
+svr_poly = SVR(kernel='poly', C=1, degree=2, coef0=0.1, gamma='scale')
 svr_rbf = SVR(kernel= 'rbf', C= 1e3, gamma= 0.1) # defining the support vector regression models
+
+
 print("Entrenando modelo SVR - RBF...")
+st.markdown("---")
 with st.spinner(text="Entrenando modelo SVR - RBF"):
     svr_rbf.fit(dates, dfprices) # fitting the data points in the models
 st.write("¡Entrenamiento modelo SVR - RBF finalizado!")
-print("Entrenando modelo SVR - Polynomial")
-with st.spinner(text="Entrenando modelo SVR - Polynomial"):
-    svr_poly.fit(dates, dfprices)
-st.write("¡Entrenamiento modelo SVR - Polynomial finalizado!")
 predict_prices_rbf = svr_rbf.predict(dates)
-predict_prices_lin = svr_rbf.predict(dates)
-
-#st.write(predict_prices_rbf)
-
 fig = plt.figure()
 plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
 plt.plot(dates, predict_prices_rbf, color= 'red', label= 'RBF model') # plotting the line made by the RBF kernel
-plt.plot(dates,predict_prices_lin, color= 'green', label= 'Polynomial model')
 plt.xlabel('Date')
 plt.ylabel('Price')
 plt.title('Support Vector Regression')
 plt.legend()
 st.pyplot(fig)
-
-
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-import math
 
 # Calcular el error cuadrático medio (MSE)
 mse = mean_squared_error(dfprices, predict_prices_rbf)
@@ -116,8 +107,37 @@ mae = mean_absolute_error(dfprices, predict_prices_rbf)
 st.write("MAE:", mae)
 
 # Calcular la raíz del error cuadrático medio (RMSE)
-rmse = math.sqrt(dfprices, predict_prices_rbf)
+rmse = math.sqrt(mse)
 st.write("RMSE:", rmse)
+
+st.markdown("---")
+print("Entrenando modelo SVR - Polynomial")
+with st.spinner(text="Entrenando modelo SVR - Polynomial"):
+    svr_poly.fit(dates, dfprices)
+st.write("¡Entrenamiento modelo SVR - Polynomial finalizado!")
+predict_prices_lin = svr_rbf.predict(dates)
+
+fig = plt.figure()
+plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
+plt.plot(dates, predict_prices_lin, color= 'red', label= 'RBF model') # plotting the line made by the RBF kernel
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Support Vector Regression')
+plt.legend()
+st.pyplot(fig)
+
+# Calcular el error cuadrático medio (MSE)
+mse = mean_squared_error(dfprices, predict_prices_lin)
+st.write("MSE:", mse)
+
+# Calcular el error absoluto medio (MAE)
+mae = mean_absolute_error(dfprices, predict_prices_lin)
+st.write("MAE:", mae)
+
+# Calcular la raíz del error cuadrático medio (RMSE)
+rmse = math.sqrt(mse)
+st.write("RMSE:", rmse)
+
 
 with st.sidebar:
     st.write("🔼 Seleccione el modelo que desea ejecutar de la lista superior")
