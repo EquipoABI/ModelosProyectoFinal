@@ -1,22 +1,20 @@
 import streamlit as st
-import matplotlib.pyplot as plt  # Importación de la biblioteca matplotlib.pyplot para graficar datos
-import pandas as pd  # Importación de la biblioteca pandas para manipulación de datos en forma de DataFrame
-import numpy as np  # Importación de la biblioteca numpy para operaciones numéricas
-
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 from datetime import datetime
 import seaborn as sns
-
 from scipy.stats import norm
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from scipy import stats
+from sklearn.svm import SVR
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+import math
 
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
+pd.Timestamp.today().strftime('%Y-%m-%d %H:%M:%S')
 
-pd.Timestamp.today().strftime('%Y-%m-%d %H:%M:%S') # Se capta la fecha y hora actual
-
-#Importamos la librería nueva
+# Importamos la librería nueva
 import yfinance as yf
 
 st.set_page_config(page_title="Modelo SVR", page_icon="📊")
@@ -27,16 +25,14 @@ st.markdown("---")
 # Set start and end dates for the price data
 # Se establece la fecha de inicio y de fin para los datos de precios usando el input del usuario
 st.write("Ingrese el rango de fechas para el análisis")
-fechaInicio = st.date_input('Fecha de inicio' , value=pd.to_datetime('2014-1-1'))  
-fechaFin = st.date_input('Fecha de fin' , value=pd.to_datetime('today'))
+fechaInicio = st.date_input('Fecha de inicio', value=pd.to_datetime('2020-1-1'))
+fechaFin = st.date_input('Fecha de fin', value=pd.to_datetime('today'))
 st.markdown("---")
-valor_txt = st.text_input("Ingrese el simbolo de valor a analizar", "BVN")
+valor_txt = st.text_input("Ingrese el símbolo de valor a analizar", "BVN")
 
 
 st.markdown("---")
-df = yf.download(valor_txt, start = fechaInicio, end = fechaFin)
-#Añadimos la terminación _BVN a cada columna y mostramos el dataframe
-#df.columns += "_%s" % valor_txt
+df = yf.download(valor_txt, start=fechaInicio, end=fechaFin)
 st.write("#### Visualizacion del dataframe obtenido de Yahoo Finance para el valor", valor_txt) 
 st.write(df)
 st.write("%i filas y %i columnas" % (df.shape[0], df.shape[1]))
@@ -55,55 +51,93 @@ plt.title('Precios reales y media móvil')
 plt.legend()
 st.pyplot(plt)
 
+dfdates  = []
+dfprices = []
+# Preparing Data
 
-""" 
-Los comentarios a continuacion solo son una guia del formato del codigo, 
-si no cumple con el modelo SVR eliminarlos y reemplazarlos por el codigo correspondiente
-"""
+###Use this function for pandas dataframes
+def gd(dataframe):
+    i = 1
+    while i < len(dataframe):
+        a = dataframe.iloc[i]
+        #print(a)
+        dfdates.append(i)
+        #print(dates)
+        dfprices.append(a[3])
+        i += 1
+    return
 
-# Transformacion de los datos
+#parses in dataframe, creates dates and prices arrays, dates is just 1-n for calculation purposes
+print("formateando datos")
+df.reset_index(inplace=True)
+gd(df)
+
+#reverses prices list, which was fed in reverse chronological order originally
+dfprices.reverse()
+
+#trains models, so far model not fast enough for >20 day inputs
+dates = np.reshape(dfdates,(len(dfdates), 1)) # converting to matrix of n X 1
 
 
-# Preprocesamiento de los datos
+svr_poly = SVR(kernel='poly', C=1, degree=2, coef0=0.1, gamma='scale')
+svr_rbf = SVR(kernel= 'rbf', C= 1e3, gamma= 0.1) # defining the support vector regression models
 
 
+print("Entrenando modelo SVR - RBF...")
+st.markdown("---")
+with st.spinner(text="Entrenando modelo SVR - RBF"):
+    svr_rbf.fit(dates, dfprices) # fitting the data points in the models
+st.write("¡Entrenamiento modelo SVR - RBF finalizado!")
+predict_prices_rbf = svr_rbf.predict(dates)
+fig = plt.figure()
+plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
+plt.plot(dates, predict_prices_rbf, color= 'red', label= 'RBF model') # plotting the line made by the RBF kernel
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Support Vector Regression')
+plt.legend()
+st.pyplot(fig)
 
-# Dividir los datos en conjunto de entrenamiento y prueba
+# Calcular el error cuadrático medio (MSE)
+mse = mean_squared_error(dfprices, predict_prices_rbf)
+st.write("MSE:", mse)
 
+# Calcular el error absoluto medio (MAE)
+mae = mean_absolute_error(dfprices, predict_prices_rbf)
+st.write("MAE:", mae)
 
-# Escalar los datos
+# Calcular la raíz del error cuadrático medio (RMSE)
+rmse = math.sqrt(mse)
+st.write("RMSE:", rmse)
 
+st.markdown("---")
+print("Entrenando modelo SVR - Polynomial")
+with st.spinner(text="Entrenando modelo SVR - Polynomial"):
+    svr_poly.fit(dates, dfprices)
+st.write("¡Entrenamiento modelo SVR - Polynomial finalizado!")
+predict_prices_lin = svr_rbf.predict(dates)
 
-# Construccion del modelo SVR
+fig = plt.figure()
+plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
+plt.plot(dates, predict_prices_lin, color= 'green', label= 'RBF model') # plotting the line made by the RBF kernel
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Support Vector Regression')
+plt.legend()
+st.pyplot(fig)
 
-# Compilar y entrenar el modelo
+# Calcular el error cuadrático medio (MSE)
+mse = mean_squared_error(dfprices, predict_prices_lin)
+st.write("MSE:", mse)
 
+# Calcular el error absoluto medio (MAE)
+mae = mean_absolute_error(dfprices, predict_prices_lin)
+st.write("MAE:", mae)
 
+# Calcular la raíz del error cuadrático medio (RMSE)
+rmse = math.sqrt(mse)
+st.write("RMSE:", rmse)
 
-# ---> Descomentar el codigo de abajo con "##" al inicio cuando se creen las variables x_test,y_test,x_train y y_train
-
-# Predecir la tendencia para el periodo de TEST, incluido el día siguiente
-
-## test_predict = model.predict(x_test)
-
-st.write("#### Dataframe con las predicciones")
-# Crear DataFrame con las predicciones
-## predictions_df = pd.DataFrame({'Valor Real': y_test, 'Predicciones': np.array(test_predict).flatten()})
-
-# Mostrar el DataFrame con las predicciones
-
-##st.write(predictions_df)
-
-# Graficar precios reales y predicciones
-## st.write("#### Grafico Precio Real vs Predicciones")
-## plt.figure(figsize=(10, 6))
-## plt.plot(y_test, color = 'red', label = 'Real Stock Price')
-## plt.plot(test_predict, color = 'blue', label = 'Predicted Stock Price')
-## plt.xlabel('Time')
-## plt.ylabel('Tesla Stock Price')
-## plt.title('Precios reales y predicciones')
-## plt.legend()
-## st.pyplot(plt)
 
 with st.sidebar:
     st.write("🔼 Seleccione el modelo que desea ejecutar de la lista superior")
