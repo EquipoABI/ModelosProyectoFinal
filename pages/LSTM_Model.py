@@ -27,7 +27,7 @@ st.markdown("---")
 # Set start and end dates for the price data
 # Se establece la fecha de inicio y de fin para los datos de precios usando el input del usuario
 st.write("Ingrese el rango de fechas para el análisis")
-fechaInicio = st.date_input('Fecha de inicio' , value=pd.to_datetime('2014-1-1'))  
+fechaInicio = st.date_input('Fecha de inicio' , value=pd.to_datetime('2020-1-1'))  
 fechaFin = st.date_input('Fecha de fin' , value=pd.to_datetime('today'))
 st.markdown("---")
 valor_txt = st.text_input("Ingrese el simbolo de valor a analizar", "BVN")

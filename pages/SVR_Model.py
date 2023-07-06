@@ -79,7 +79,7 @@ dfprices.reverse()
 dates = np.reshape(dfdates,(len(dfdates), 1)) # converting to matrix of n X 1
 
 
-svr_poly = SVR(kernel='poly', C=1, degree=2, coef0=0.1, gamma='scale')
+svr_poly = SVR(kernel='poly', C=1, degree=4, coef0=0.1, gamma='scale')
 svr_rbf = SVR(kernel= 'rbf', C= 1e3, gamma= 0.1) # defining the support vector regression models
 
 
