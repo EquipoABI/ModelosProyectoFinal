@@ -24,7 +24,7 @@ st.markdown("---")
 # Set start and end dates for the price data
 # Se establece la fecha de inicio y de fin para los datos de precios usando el input del usuario
 st.write("Ingrese el rango de fechas para el análisis")
-fechaInicio = st.date_input('Fecha de inicio', value=pd.to_datetime('2014-1-1'))
+fechaInicio = st.date_input('Fecha de inicio', value=pd.to_datetime('2019-1-1'))
 fechaFin = st.date_input('Fecha de fin', value=pd.to_datetime('today'))
 st.markdown("---")
 valor_txt = st.text_input("Ingrese el símbolo de valor a analizar", "BVN")
@@ -83,8 +83,11 @@ svr_rbf = SVR(kernel= 'rbf', C= 1e3, gamma= 0.1) # defining the support vector r
 print("Entrenando modelo SVR - RBF...")
 with st.spinner(text="Entrenando modelo SVR - RBF"):
     svr_rbf.fit(dates, dfprices) # fitting the data points in the models
+st.write("¡Entrenamiento modelo SVR - RBF finalizado!")
+print("Entrenando modelo SVR - Polynomial")
 with st.spinner(text="Entrenando modelo SVR - Polynomial"):
     svr_poly.fit(dates, dfprices)
+st.write("¡Entrenamiento modelo SVR - Polynomial finalizado!")
 predict_prices_rbf = svr_rbf.predict(dates)
 predict_prices_lin = svr_rbf.predict(dates)
 
