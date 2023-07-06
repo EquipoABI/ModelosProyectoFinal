@@ -115,11 +115,11 @@ print("Entrenando modelo SVR - Polynomial")
 with st.spinner(text="Entrenando modelo SVR - Polynomial"):
     svr_poly.fit(dates, dfprices)
 st.write("¡Entrenamiento modelo SVR - Polynomial finalizado!")
-predict_prices_lin = svr_rbf.predict(dates)
+predict_prices_poly = svr_poly.predict(dates)
 
 fig = plt.figure()
 plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
-plt.plot(dates, predict_prices_lin, color= 'green', label= 'RBF model') # plotting the line made by the RBF kernel
+plt.plot(dates, predict_prices_poly, color= 'green', label= 'RBF model') # plotting the line made by the RBF kernel
 plt.xlabel('Date')
 plt.ylabel('Price')
 plt.title('Support Vector Regression')
@@ -127,11 +127,11 @@ plt.legend()
 st.pyplot(fig)
 
 # Calcular el error cuadrático medio (MSE)
-mse = mean_squared_error(dfprices, predict_prices_lin)
+mse = mean_squared_error(dfprices, predict_prices_poly)
 st.write("MSE:", mse)
 
 # Calcular el error absoluto medio (MAE)
-mae = mean_absolute_error(dfprices, predict_prices_lin)
+mae = mean_absolute_error(dfprices, predict_prices_poly)
 st.write("MAE:", mae)
 
 # Calcular la raíz del error cuadrático medio (RMSE)
