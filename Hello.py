@@ -14,7 +14,7 @@ st.markdown(
     | Montes Pérez, Josue Justi |  |
     | Ortiz Urbai, Sebastian | 20200056 |
     | Suel Arroyo, Walter Nick | |
-    | Tuyo Acero, Gustavo Alonso | |
+    | Tuyo Acero, Gustavo Alonso | 20200302 |
     | Velásquez Díaz, Ahmad Roshán |  |
     
     #
