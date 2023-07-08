@@ -9,7 +9,7 @@ st.markdown(
     ## Integrantes del Equipo A:
     | Nombre | Codigo|
     |--|--|
-    | Laos Carrasco, Rafael Alonso | |
+    | Laos Carrasco, Rafael Alonso | 20200143 |
     | Meza Ramón, Marco Alfredo Rubén |  |
     | Montes Pérez, Josue Justi |  |
     | Ortiz Urbai, Sebastian | 20200056 |
