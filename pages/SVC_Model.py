@@ -92,7 +92,7 @@ plt.legend()
 st.pyplot(plt)
 
 # Indicar la última predicción de tendencia
-#st.write("#### Última tendencia predicha: ",df['Predicted_Signal'].iloc[-1])
+st.write("#### Última tendencia predicha: ",df['Predicted_Signal'].iloc[-1])
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
