@@ -82,17 +82,17 @@ predictions_df = pd.DataFrame({'Tendencia Real': df['Trend'] , 'Tendencia predec
 st.write(predictions_df)
 
 st.write("#### Grafico Tendencia Real vs Predicciones")
-fig = plt.figure(figsize=(10, 6))
+plt.figure(figsize=(10, 6))
 plt.plot(df['Trend'][:50],color='red',label= 'Tendencia Real')
 plt.plot(df['Predicted_Signal'][:50],color='blue',label= 'Tendencia predicha')
 plt.xlabel('Tiempo')
 plt.ylabel('Tendencia')
 plt.title('Tendencias reales y predicciones para los últimos 50 días')
 plt.legend()
-st.pyplot(fig)
+st.pyplot(plt)
 
 # Indicar la última predicción de tendencia
-st.write("#### Última tendencia predicha: ",df['Predicted_Signal'][-1])
+#st.write("#### Última tendencia predicha: ",df['Predicted_Signal'].iloc[-1])
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
