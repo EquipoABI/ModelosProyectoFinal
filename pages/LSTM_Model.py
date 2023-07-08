@@ -160,6 +160,8 @@ st.success('Predicción realizada con éxito!')
 # Predecir la tendencia para el periodo de TEST, incluido el día siguiente
 test_predict = model.predict(x_test)
 
+# Convertir probabilidad en clases 0 y 1
+test_predict = (test_predict >= 0.5).astype(int)
 
 st.write("#### Dataframe con las predicciones")
 # Crear DataFrame con las predicciones
@@ -169,15 +171,20 @@ predictions_df = pd.DataFrame({'Valor Real': y_test, 'Predicciones': np.array(te
 st.write(predictions_df)
 
 # Graficar precios reales y predicciones
-st.write("#### Grafico Precio Real vs Predicciones")
+st.write("#### Grafico Tendencia Real vs Predicciones")
 plt.figure(figsize=(10, 6))
-plt.plot(y_test, color = 'red', label = 'Real Stock Price')
-plt.plot(test_predict, color = 'blue', label = 'Predicted Stock Price')
+plt.plot(y_test, color = 'red', label = 'Tendencia Real')
+plt.plot(test_predict, color = 'blue', label = 'Tendencia Predicha')
 plt.xlabel('Time')
-plt.ylabel('Tesla Stock Price')
-plt.title('Precios reales y predicciones')
+plt.ylabel('Tendencia')
+plt.title('Tendencias reales y predicciones')
 plt.legend()
 st.pyplot(plt)
+
+ultima_tendencia = "A la baja" if test_predict[-1] == 0 else "A la alza"
+
+# Indicar la última predicción de tendencia
+st.write("#### Última tendencia predicha: ",ultima_tendencia)
 
 with st.sidebar:
     st.write("🔼 Seleccione el modelo que desea ejecutar de la lista superior")
