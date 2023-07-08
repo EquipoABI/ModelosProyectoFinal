@@ -90,13 +90,16 @@ with st.spinner(text="Entrenando modelo SVR - RBF"):
 st.write("¡Entrenamiento modelo SVR - RBF finalizado!")
 predict_prices_rbf = svr_rbf.predict(dates)
 fig = plt.figure()
-plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
-plt.plot(dates, predict_prices_rbf, color= 'red', label= 'RBF model') # plotting the line made by the RBF kernel
-plt.xlabel('Date')
-plt.ylabel('Price')
+plt.scatter(dates, dfprices, color= 'black', label= 'Precios Reales') # plotting the initial datapoints
+plt.plot(dates, predict_prices_rbf, color= 'red', label= 'Modelo RBF') # plotting the line made by the RBF kernel
+plt.xlabel('Tiempo')
+plt.ylabel('Precio')
 plt.title('Support Vector Regression')
 plt.legend()
 st.pyplot(fig)
+
+# Indicar la última predicción de precio
+st.write("#### Último precio predicho: ",predict_prices_rbf[-1])
 
 # Calcular el error cuadrático medio (MSE)
 mse = mean_squared_error(dfprices, predict_prices_rbf)
@@ -118,13 +121,16 @@ st.write("¡Entrenamiento modelo SVR - Polynomial finalizado!")
 predict_prices_poly = svr_poly.predict(dates)
 
 fig = plt.figure()
-plt.scatter(dates, dfprices, color= 'black', label= 'Real Prices') # plotting the initial datapoints
-plt.plot(dates, predict_prices_poly, color= 'green', label= 'RBF model') # plotting the line made by the RBF kernel
-plt.xlabel('Date')
-plt.ylabel('Price')
+plt.scatter(dates, dfprices, color= 'black', label= 'Precios Reales') # plotting the initial datapoints
+plt.plot(dates, predict_prices_poly, color= 'green', label= 'Modelo polinomial') # plotting the line made by the RBF kernel
+plt.xlabel('Tiempo')
+plt.ylabel('Precio')
 plt.title('Support Vector Regression')
 plt.legend()
 st.pyplot(fig)
+
+# Indicar la última predicción de precio
+st.write("#### Último precio predicho: ",predict_prices_poly[-1])
 
 # Calcular el error cuadrático medio (MSE)
 mse = mean_squared_error(dfprices, predict_prices_poly)
