@@ -9,12 +9,12 @@ st.markdown(
     ## Integrantes del Equipo A:
     | Nombre | Codigo|
     |--|--|
-    | Laos Carrasco, Rafael Alonso | 20200143 |
+    | Laos Carrasco, Rafael Alonso |20200143|
     | Meza Ramón, Marco Alfredo Rubén |  |
     | Montes Pérez, Josue Justi |  |
-    | Ortiz Urbai, Sebastian | 20200056 |
+    | Ortiz Urbai, Sebastian |20200056|
     | Suel Arroyo, Walter Nick | |
-    | Tuyo Acero, Gustavo Alonso | 20200302 |
+    | Tuyo Acero, Gustavo Alonso |20200302|
     | Velásquez Díaz, Ahmad Roshán |  |
     
     #
