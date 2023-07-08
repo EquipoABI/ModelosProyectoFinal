@@ -91,8 +91,10 @@ plt.title('Tendencias reales y predicciones para los últimos 50 días')
 plt.legend()
 st.pyplot(plt)
 
+ultima_tendencia = "A la baja" if df['Predicted_Signal'].iloc[-1] == 0 else "A la alza"
+
 # Indicar la última predicción de tendencia
-st.write("#### Última tendencia predicha: ",df['Predicted_Signal'].iloc[-1])
+st.write("#### Última tendencia predicha: ",ultima_tendencia)
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
