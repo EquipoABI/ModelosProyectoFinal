@@ -18,7 +18,6 @@
 - Video Presentación del Proyecto:
 [![Video Presentación](https://img.youtube.com/vi/tuinxMpY-H4/0.jpg)](https://youtu.be/tuinxMpY-H4)
 
-
 💻💾 ¡Mira una demo de nuestro sistema piloto en acción! ➡️ [Ver Demo](https://modelosproyectofinal-zvopr9c9wen.streamlit.app/)
 
 ## Explorar el Código:
