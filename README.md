@@ -1,4 +1,4 @@
-# Modelos ProyectoF inal
+# Modelos Proyecto Final
 # Modelos en Python para Bolsa de Valores 🚀📈🤖
 
 ¡Bienvenido al repositorio de Modelos en Python para Bolsa de Valores! Aquí encontrarás implementaciones detalladas de modelos de inteligencia artificial utilizados para pronosticar tendencias y predecir precios en el mercado financiero. En este proyecto, nos enfocamos en tres modelos avanzados: Redes Neuronales LSTM, Support Vector Classifier (SVC) y Support Vector Regressor (SVR).
@@ -16,7 +16,8 @@
 
 ## Demostración del Sistema:
 - Video Presentación del Proyecto:
-[![Video Presentación](https://www.youtube.com/watch?v=tuinxMpY-H4)
+[![Video Presentación](https://img.youtube.com/vi/tuinxMpY-H4/0.jpg)](https://youtu.be/tuinxMpY-H4)
+
 
 💻💾 ¡Mira una demo de nuestro sistema piloto en acción! ➡️ [Ver Demo](https://modelosproyectofinal-zvopr9c9wen.streamlit.app/)
 
